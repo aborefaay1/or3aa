@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>or3aa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            position: relative;
+            flex-direction: column;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            z-index: 10;
+        }
+        input {
+            padding: 10px;
+            margin: 5px;
+            width: 80%;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+        .result-box {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        .result {
+            font-size: 1.5em;
+            color: #333;
+        }
+        .footer {
+            position: absolute;
+            bottom: 20px;
+            text-align: center;
+            font-size: 1em;
+            color: #555;
+            width: 100%;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>القرعه</h1>
+        <input type="text" id="nameInput" placeholder="أدخل اسم الشخص" onkeypress="handleKeyPress(event, 'name')">
+        <button onclick="addName()">إضافة اسم</button>
+        <input type="text" id="topicInput" placeholder="أدخل موضوع" onkeypress="handleKeyPress(event, 'topic')">
+        <button onclick="addTopic()">إضافة موضوع</button>
+        <button onclick="drawLottery()">إجراء القرعة</button>
+    </div>
+
+    <div id="overlay" class="overlay">
+        <div class="result-box">
+            <div id="result" class="result"></div>
+            <button onclick="closeResult()">إغلاق</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        Create with Ahmed Hussein
+    </div>
+
+    <script>
+        let names = [];
+        let topics = [];
+        let usedNames = [];
+        let usedTopics = [];
+
+        function handleKeyPress(event, type) {
+            if (event.key === 'Enter') {
+                if (type === 'name') {
+                    addName();
+                } else if (type === 'topic') {
+                    addTopic();
+                }
+            }
+        }
+
+        function addName() {
+            const nameInput = document.getElementById('nameInput');
+            const name = nameInput.value.trim();
+            if (name && !names.includes(name)) {
+                names.push(name);
+                nameInput.value = ''; // مسح حقل الإدخال
+                alert(`تم إضافة الاسم: ${name}`);
+            } else if (names.includes(name)) {
+                alert(`الاسم "${name}" موجود بالفعل.`);
+            }
+        }
+
+        function addTopic() {
+            const topicInput = document.getElementById('topicInput');
+            const topic = topicInput.value.trim();
+            if (topic && !topics.includes(topic)) {
+                topics.push(topic);
+                topicInput.value = ''; // مسح حقل الإدخال
+                alert(`تم إضافة الموضوع: ${topic}`);
+            } else if (topics.includes(topic)) {
+                alert(`الموضوع "${topic}" موجود بالفعل.`);
+            }
+        }
+
+        function drawLottery() {
+            let overlay = document.getElementById('overlay');
+            let resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ""; // مسح النتائج السابقة
+
+            if (usedNames.length >= names.length || usedTopics.length >= topics.length) {
+                resultDiv.innerHTML = "لقد تم عرض جميع الأسماء أو المواضيع.";
+                overlay.style.display = "flex";
+                return;
+            }
+
+            // اختيار اسم عشوائي غير مستخدم
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * names.length);
+            } while (usedNames.includes(randomIndex));
+
+            usedNames.push(randomIndex); // إضافة الاسم إلى الأسماء المستخدمة
+
+            // اختيار موضوع عشوائي غير مستخدم
+            let randomTopicIndex;
+            do {
+                randomTopicIndex = Math.floor(Math.random() * topics.length);
+            } while (usedTopics.includes(randomTopicIndex));
+
+            usedTopics.push(randomTopicIndex); // إضافة الموضوع إلى المواضيع المستخدمة
+
+            resultDiv.innerHTML = `الاسم: <strong>${names[randomIndex]}</strong><br>الموضوع: <strong>${topics[randomTopicIndex]}</strong>`;
+            overlay.style.display = "flex"; // إظهار المربع
+        }
+
+        function closeResult() {
+            let overlay = document.getElementById('overlay');
+            overlay.style.display = "none"; // إخفاء المربع
+        }
+    </script>
+</body>
+</html>
